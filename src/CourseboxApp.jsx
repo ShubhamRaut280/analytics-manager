@@ -70,14 +70,59 @@ function CourseboxApp() {
     },
   ];
 
-  const handlePurchaseCourse = (courseId) => {
-    console.log(`Purchase course with ID: ${courseId}`);
-    alert(`Purchase course with ID: ${courseId}`);
+  const handlePurchaseCourse = async (courseId) => { 
+    try {
+      const response = await fetch('http://localhost:8080/api/event', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          courseId: courseId,
+          eventType: 'purchase'
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Event created:', data);
+      alert("Event created successfully!");
+      // Handle success here
+    } catch (error) {
+      console.error('Error sending event:', error);
+      // Handle error here
+    }
+ 
   };
 
-  const handleEnrollCourse = (courseId) => {
-    console.log(`Enroll in course with ID: ${courseId}`);
-    alert(`Enroll in course with ID: ${courseId}`);
+  const handleEnrollCourse = async(courseId) => {try {
+    const response = await fetch('http://localhost:8080/api/event', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        courseId: courseId,
+        eventType: 'enroll'
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Event created:', data);
+    alert("Event created successfully!");
+    // Handle success here
+  } catch (error) {
+    console.error('Error sending event:', error);
+    // Handle error here
+  }
+
   };
 
   return (
