@@ -69,13 +69,23 @@ function CourseboxApp() {
       free: true,
     },
   ];
+
+  const handlePurchaseCourse = (courseId) => {
+    console.log(`Purchase course with ID: ${courseId}`);
+    alert(`Purchase course with ID: ${courseId}`);
+  };
+
+  const handleEnrollCourse = (courseId) => {
+    console.log(`Enroll in course with ID: ${courseId}`);
+    alert(`Enroll in course with ID: ${courseId}`);
+  };
+
   return (
     <>
       <header className="border-b border-gray-200">
         <div className="max-w-[1200px] mx-auto flex items-center justify-between px-4 py-3">
           <div className="flex items-center space-x-4">
             <a className="flex items-center" href="#">
-             
               <span className="ml-1 font-extrabold text-2xl tracking-tight select-none">
                 CourseBox
               </span>
@@ -102,7 +112,6 @@ function CourseboxApp() {
             />
           </form>
           <nav className="hidden sm:flex items-center space-x-6 text-sm font-normal text-gray-700">
-           
             <a className="hover:underline" href="#">
               My learning
             </a>
@@ -266,8 +275,13 @@ function CourseboxApp() {
                     )}
                   </div>
                   <button
-                    className={`mt-auto text-white text-xs font-semibold rounded px-3 py-1 w-max hover:opacity-90 focus:outline-none ${course.buttonColor}`}
+                    className={`mt-auto text-white text-xs font-semibold rounded px-3 py-1 w-max transform transition-transform duration-150 ease-in-out hover:scale-105 active:scale-95 focus:outline-none cursor-pointer ${course.buttonColor}`}
                     type="button"
+                    onClick={() =>
+                      course.free
+                        ? handleEnrollCourse(course.id)
+                        : handlePurchaseCourse(course.id)
+                    }
                   >
                     {course.buttonText}
                   </button>
