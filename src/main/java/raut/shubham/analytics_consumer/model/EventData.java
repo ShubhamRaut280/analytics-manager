@@ -17,6 +17,7 @@ public class EventData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
     private String courseId;
     private String eventType;
 
