@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   prometheus:
@@ -7,6 +7,8 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
+    networks:
+      - analytics-net
 
   grafana:
     image: grafana/grafana
@@ -15,3 +17,28 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - analytics-net
+    depends_on:
+      - prometheus
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: analytics_db
+      MYSQL_USER: analytics_user
+      MYSQL_PASSWORD: analytics_pass
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - analytics-net
+
+networks:
+  analytics-net:
+
+volumes:
+  mysql_data:

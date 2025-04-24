@@ -4,15 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Counter;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import raut.shubham.analytics_consumer.model.EventData;
+import raut.shubham.analytics_consumer.repository.AnalyticsRepository;
 
 @Service
 @EnableKafka
 
 public class KafkaEventConsumer {
+    @Autowired
+    private AnalyticsRepository repository;
 
     private final MeterRegistry meterRegistry;
     private Counter enrollCounter;
@@ -40,6 +44,9 @@ public class KafkaEventConsumer {
                 case "enroll" -> enrollCounter.increment();
                 case "purchase" -> purchaseCounter.increment();
             }
+
+            repository.save(event);
+
 
         } catch (Exception e) {
             e.printStackTrace();
