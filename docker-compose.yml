@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - analytics-net
+
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+
+    networks:
+      - analytics-net
+
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+    depends_on:
+      - zookeeper
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - analytics-net
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - analytics-net
+    depends_on:
+      - prometheus
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: analytics_db
+      MYSQL_USER: analytics_user
+      MYSQL_PASSWORD: analytics_pass
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - analytics-net
+
+  producer:
+    build:
+      context: ./analytics-producer
+
+    ports:
+      - "8080:8080"
+
+    networks:
+      - analytics-net
+
+    depends_on:
+      - kafka
+
+  consumer:
+    build:
+      context: ./analytics-consumer
+
+    ports:
+      - "8081:8081"
+
+    networks:
+      - analytics-net
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/analytics_db
+      SPRING_DATASOURCE_USERNAME: analytics_user
+      SPRING_DATASOURCE_PASSWORD: analytics_pass
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
+    depends_on:
+      - kafka
+      - mysql
+
+
+
+
+networks:
+  analytics-net:
+
+volumes:
+  mysql_data:
