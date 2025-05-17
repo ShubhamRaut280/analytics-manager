@@ -54,7 +54,7 @@ A real-time analytics system to monitor user actions like course enrollments, pu
 ### 🛠️ Prerequisites
 
 - Java 17+
-- Node.js & npm
+- Node.js & npm (for react)
 - Docker & Docker Compose
 - Git
 
@@ -68,6 +68,18 @@ cd analytics-manager
 ```
 
 ---
+
+### ⚙️ Run Everything at once
+
+#### 🔵 Run docker compose from the root folder
+
+```bash
+git checkout main
+cd analytics-manager
+docker-compose up --build
+```
+
+## OR
 
 ### ⚙️ Run Each Component
 
@@ -166,7 +178,7 @@ event_purchase_total{courseId="c123"} 4
 
 ## 👨‍💻 Author
 
-Built with ❤️ by [Shubham Raut](https://github.com/ShubhamRaut280)
+Built by [Shubham Raut](https://github.com/ShubhamRaut280)
 
 ---
 
